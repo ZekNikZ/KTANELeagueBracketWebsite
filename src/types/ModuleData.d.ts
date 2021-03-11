@@ -13,6 +13,7 @@ export interface ModuleData {
     DefuserDifficulty: ModuleDifficulty;
     Description: string;
     ExpertDifficulty: ModuleDifficulty;
+    FileName?: string;
     ModuleID: ModuleID;
     Name: string;
     Origin: 'Vanilla' | 'Mods';
