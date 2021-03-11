@@ -51,7 +51,7 @@ const Home: React.FC = () => {
                 renderInput={(params) => <TextField {...params} label="Module" variant="outlined" />}
             /> */}
             <div style={{ display: 'grid', width: '100%', gridTemplateColumns: 'repeat(2, 50%)' }}>
-                <ModuleCard moduleId="booleanVennModule" />
+                <ModuleCard moduleId="booleanVennModule" dark />
                 <ModuleCard moduleId="punctuationMarks" />
                 <ModuleCard moduleId="X01" />
                 <ModuleCard moduleId="LEGOModule" />
