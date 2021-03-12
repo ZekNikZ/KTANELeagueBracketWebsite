@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import type { ModuleData, ModuleID } from '../../types/ModuleData';
 import { MODULE_DATA_URL } from './constants';
+import useAsync from '../../util/hooks/useAsync';
 
 let MODULE_DATA: ModuleData[] = [];
 let MODULE_DATA_MAP: { [key: string]: ModuleData } = {};
@@ -55,11 +56,9 @@ export async function isBossModule(key: ModuleID): Promise<boolean> {
 export function useModuleData(moduleId: ModuleID): ModuleData | null {
     const [moduleData, setModuleData] = useState(null);
 
-    useEffect(() => {
-        loadModuleData().then(() => {
-            setModuleData(MODULE_DATA_MAP[moduleId] || null);
-        });
-    }, []);
+    useAsync(loadModuleData, () => {
+        setModuleData(MODULE_DATA_MAP[moduleId] || null);
+    });
 
     useEffect(() => {
         setModuleData(MODULE_DATA_MAP[moduleId] || null);

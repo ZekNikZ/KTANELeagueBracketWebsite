@@ -6,9 +6,19 @@ import SiteTheme from '../util/theme';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function MyApp({ Component, pageProps }: AppProps) {
-    return <ThemeProvider theme={SiteTheme}>
-        <Component {...pageProps} />
-    </ThemeProvider>;
+    React.useEffect(() => {
+        // Remove the server-side injected CSS.
+        const jssStyles = document.querySelector('#jss-server-side');
+        if (jssStyles) {
+            jssStyles.parentElement.removeChild(jssStyles);
+        }
+    }, []);
+
+    return (
+        <ThemeProvider theme={SiteTheme}>
+            <Component {...pageProps} />
+        </ThemeProvider>
+    );
 }
 
 export default MyApp;

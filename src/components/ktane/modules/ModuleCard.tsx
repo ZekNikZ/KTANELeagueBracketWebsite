@@ -1,5 +1,6 @@
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import classnames from 'classnames';
 
 import Button from '@material-ui/core/Button';
 
@@ -19,10 +20,24 @@ const useStyles = makeStyles<Theme, ModuleCardProps>({
         textAlign: 'left',
         justifyContent: 'start',
         color: ({ dark }) => (dark ? 'white' : 'inherit'),
-        height: '38px',
+        textTransform: 'none',
     },
     moduleIcon: {
         marginRight: '4px',
+    },
+    label: {
+        lineHeight: '14px',
+        // fontSize: '14px',
+    },
+    flavorText: {
+        color: ({ dark }) => (dark ? 'lightgray' : 'darkgray'),
+        fontStyle: 'italic',
+        textDecoration: 'none',
+    },
+    link: {
+        '&:hover': {
+            textDecoration: 'underline',
+        },
     },
 });
 
@@ -34,6 +49,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = (props: ModuleCardProps) =>
     return (
         <Button
             className={`${classes.card} ${props.className}`}
+            classes={{ label: classes.label }}
             onClick={(event) => props.onClick && props.onClick(event, moduleData)}
             href={
                 !props.disableManualLink && moduleData
@@ -42,7 +58,32 @@ export const ModuleCard: React.FC<ModuleCardProps> = (props: ModuleCardProps) =>
             }
         >
             <ModuleIcon moduleId={props.moduleId} className={classes.moduleIcon} />
-            {moduleData?.Name || 'Loading...'}
+            <span>
+                {!moduleData?.Name ? (
+                    'Loading...'
+                ) : (
+                    <>
+                        {moduleData?.Name}
+                        {props.againstName && (
+                            <>
+                                <br />
+                                <a
+                                    className={classnames(classes.flavorText, { [classes.link]: props.againstLink })}
+                                    href={props.againstLink}
+                                >
+                                    (against {props.againstName})
+                                </a>
+                            </>
+                        )}
+                        {props.vetoedByNum && (
+                            <>
+                                <br />
+                                <span className={classes.flavorText}>(vetoed by {props.vetoedByNum} opponents)</span>
+                            </>
+                        )}
+                    </>
+                )}
+            </span>
         </Button>
     );
 };
@@ -56,4 +97,7 @@ export interface ModuleCardProps {
     disableManualLink?: boolean;
     className?: string;
     selected?: boolean;
+    vetoedByNum?: number | string;
+    againstName?: string;
+    againstLink?: string;
 }
