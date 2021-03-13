@@ -1,4 +1,5 @@
 import { Theme, makeStyles } from '@material-ui/core/styles';
+import CSS from 'csstype';
 import React from 'react';
 import classnames from 'classnames';
 
@@ -50,6 +51,7 @@ export const ModuleCard: React.FC<ModuleCardProps> = (props: ModuleCardProps) =>
         <Button
             className={`${classes.card} ${props.className}`}
             classes={{ label: classes.label }}
+            style={props.style}
             onClick={(event) => props.onClick && props.onClick(event, moduleData)}
             href={
                 !props.disableManualLink && moduleData
@@ -96,6 +98,7 @@ export interface ModuleCardProps {
     onClick?: (MouseEvent, ModuleData) => void;
     disableManualLink?: boolean;
     className?: string;
+    style?: CSS.Properties;
     selected?: boolean;
     vetoedByNum?: number | string;
     againstName?: string;

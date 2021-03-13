@@ -5,6 +5,7 @@ import _ from 'lodash';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 
@@ -31,15 +32,20 @@ const useStyles = makeStyles<Theme, SelectorProps>({
         justifyContent: 'center',
         marginTop: '10px',
     },
+    item: {
+        display: 'grid',
+        gridTemplateColumns: '42px auto',
+    },
 });
 
-const initialState = { selectedItems: [], selectedOption: null };
+const initialState = { selectedItems: [], selectedOption: null, highlightedCount: 0 };
 
 function reducer(state, action) {
     switch (action.type) {
         case 'add-item':
             if (state.selectedOption !== null) {
                 return {
+                    ...state,
                     selectedItems: [...state.selectedItems, { value: state.selectedOption, highlighted: false }],
                     selectedOption: null,
                 };
@@ -56,13 +62,18 @@ function reducer(state, action) {
                     return { ...state, selectedOption: null };
                 }
                 return {
+                    ...state,
                     selectedItems: [...state.selectedItems, { value: state.selectedOption, highlighted: false }],
                     selectedOption: null,
                 };
             }
             return state;
         case 'remove-items':
-            return { ...state, selectedItems: state.selectedItems.filter((item) => !item.highlighted) };
+            return {
+                ...state,
+                selectedItems: state.selectedItems.filter((item) => !item.highlighted),
+                highlightedCount: 0,
+            };
         case 'select-option':
             return { ...state, selectedOption: action.value };
         case 'clear-option':
@@ -70,9 +81,10 @@ function reducer(state, action) {
         case 'set-highlight':
             return {
                 ...state,
-                selectedItems: state.selectedItems.map((item) =>
-                    action.pred(item) ? { ...item, highlight: action.value } : item
+                selectedItems: state.selectedItems.map((item, i) =>
+                    i === action.index ? { ...item, highlighted: action.value } : item
                 ),
+                highlightedCount: state.highlightedCount + (action.value ? 1 : -1),
             };
         default:
             throw new Error();
@@ -135,14 +147,24 @@ export const Selector: React.FC<SelectorProps> = (props: SelectorProps) => {
                     {(props.sort && props.sortComparator
                         ? state.selectedItems.sort((a, b) => props.sortComparator(a.value, b.value))
                         : state.selectedItems
-                    ).map((item, i) => props.itemRenderer(i, item.value, item.highlighted))}
+                    ).map((item, i) => (
+                        <div key={i} className={classes.item}>
+                            <Checkbox
+                                checked={item.highlighted}
+                                onChange={(event) =>
+                                    dispatch({ type: 'set-highlight', value: event.target.checked, index: i })
+                                }
+                            />
+                            {props.itemRenderer(item.value, item.highlighted)}
+                        </div>
+                    ))}
                 </div>
                 <div className={classes.footer}>
                     <Button
                         className={classes.removeButton}
                         color="secondary"
                         variant="contained"
-                        disabled={state.selectedItems.length === 0}
+                        disabled={state.highlightedCount === 0}
                         onClick={removeSelectedOptions}
                     >
                         Remove Selected
@@ -157,7 +179,7 @@ export default Selector;
 
 export interface SelectorProps {
     label: string;
-    itemRenderer: (key: number, option, selected: boolean) => React.ReactNode;
+    itemRenderer: (option, selected: boolean) => React.ReactNode;
     options?: unknown[];
     groupBy?: (option) => string;
     getOptionLabel?: (option) => string;

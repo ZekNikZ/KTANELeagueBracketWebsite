@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-
 import ModuleCard from '../components/ktane/modules/ModuleCard';
 import { ModuleData } from '../types/ModuleData';
 import Selector from '../components/selector/Selector';
@@ -52,8 +49,8 @@ const Home: React.FC = () => {
                 options={options.sort(comparatorFunction)}
                 groupBy={(option) => option.firstLetter}
                 getOptionLabel={(option) => option.Name}
-                itemRenderer={(key, option: ModuleData) => {
-                    return <ModuleCard key={key} moduleId={option.ModuleID} />;
+                itemRenderer={(option: ModuleData) => {
+                    return <ModuleCard moduleId={option.ModuleID} />;
                 }}
                 label="Module name"
             />
